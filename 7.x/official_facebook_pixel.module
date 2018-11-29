@@ -1,0 +1,86 @@
+<?php
+
+/*
+* Copyright (C) 2017-present, Facebook, Inc.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; version 2 of the License.
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*/
+
+/**
+ * @file
+ * Contains facebook_pixel.module.
+ */
+
+use Drupal\official_facebook_pixel\PixelScriptBuilder;
+require_once 'PixelScriptBuilder.php';
+
+/**
+ * Implements hook_permission().
+ */
+function official_facebook_pixel_permission() {
+  return array(
+    'admin' => array(
+      'title' => 'Official Facebook Pixel Plugin Admin',
+      'description' => t('Official Facebook Pixel plugin admin.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function official_facebook_pixel_menu() {
+  $items = array();
+
+  $items['admin/config/system/official_facebook_pixel'] = array(
+    'title' => 'Official Facebook Pixel Settings',
+    'description' => 'Configure Official Facebook Pixel.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('official_facebook_pixel_settings_form'),
+    'access arguments' => array('admin'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'official_facebook_pixel.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_page_build().
+ */
+function official_facebook_pixel_page_build(&$page) {
+  if (!should_render()) {
+    return;
+  }
+
+  $pixel_id = variable_get('pixel_id');
+
+  $pixel = new PixelScriptBuilder($pixel_id);
+
+  $pixel_code = $pixel->getPixelCode();
+
+  drupal_add_html_head(
+    [
+      '#type' => 'markup',
+      '#markup' => $pixel_code,
+      '#weight' => 1000,
+    ],
+    'facebook_pixel_code');
+}
+
+/**
+ * Check if pixel code should be rendered
+ *
+ * @return boolean True is should render pixel code, otherwise false.
+ */
+function should_render() {
+  global $user;
+  $roles = $user->roles;
+  return !(is_array($roles) && in_array("administrator", $roles));
+}

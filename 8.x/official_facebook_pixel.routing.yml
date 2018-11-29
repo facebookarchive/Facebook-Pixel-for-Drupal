@@ -1,0 +1,11 @@
+# Copyright (C) 2018 Facebook Pixel
+# This file is distributed under the same license as the Facebook Pixel package.
+official_facebook_pixel.settings_form:
+  path: '/admin/config/official_facebook_pixel/settings'
+  defaults:
+    _form: '\Drupal\official_facebook_pixel\Form\OfficialFacebookPixelSettingsForm'
+    _title: 'Official Facebook Pixel Settings'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE

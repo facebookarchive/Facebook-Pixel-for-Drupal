@@ -1,0 +1,8 @@
+# Copyright (C) 2018 Facebook Pixel
+# This file is distributed under the same license as the Facebook Pixel package.
+official_facebook_pixel.admin:
+  title: 'Official Facebook Pixel'
+  route_name: official_facebook_pixel.settings_form
+  description: 'Official Facebook Pixel Settings'
+  parent: system.admin_config_system
+  weight: 100

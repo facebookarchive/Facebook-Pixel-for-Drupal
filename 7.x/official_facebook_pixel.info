@@ -1,0 +1,7 @@
+name = Official Facebook Pixel
+description = Official plugin provided by Facebook that will install a Facebook
+Pixel on your Drupal site.
+package = Statistics
+core = 7.x
+
+configure = admin/config/system/official_facebook_pixel

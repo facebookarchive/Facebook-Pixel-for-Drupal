@@ -1,0 +1,11 @@
+# Copyright (C) 2018 Facebook Pixel
+# This file is distributed under the same license as the Facebook Pixel package.
+name: Official Facebook Pixel
+description: Official plugin provided by Facebook that  will install a Facebook
+  Pixel on your Drupal site.
+package: Statistics
+
+type: module
+core: 8.x
+
+configure: official_facebook_pixel.settings_form
