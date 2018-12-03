@@ -13,13 +13,13 @@
 */
 
 use PHPUnit\Framework\TestCase;
-define('_JEXEC', 1);
+use Drupal\official_facebook_pixel\PixelScriptBuilder;
 
 final class PixelScriptBuilderTest extends TestCase {
   public function testCanGetPixelCode() {
-    $pixel = new \Drupal\facebook_pixel\PixelScriptBuilder('12345');
+    $pixel = new PixelScriptBuilder('12345');
     $this->assertInstanceOf(
-      \Drupal\facebook_pixel\PixelScriptBuilder::class,
+      PixelScriptBuilder::class,
       $pixel);
   }
 }
