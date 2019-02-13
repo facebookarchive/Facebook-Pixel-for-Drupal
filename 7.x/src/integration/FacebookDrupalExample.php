@@ -12,14 +12,23 @@
  * GNU General Public License for more details.
  */
 
-use PHPUnit\Framework\TestCase;
-use Drupal\official_facebook_pixel\PixelScriptBuilder;
+/**
+ * @file
+ * Contains \Drupal\official_facebook_pixel
+ * \integration\FacebookDrupalExample.
+ */
 
-final class PixelScriptBuilderTest extends TestCase {
-  public function testCanGetPixelCode() {
-    $pixel = new PixelScriptBuilder('12345');
-    $this->assertInstanceOf(
-      PixelScriptBuilder::class,
-      $pixel);
+namespace Drupal\official_facebook_pixel\integration;
+
+/**
+ * Class FacebookDrupalExample.
+ *
+ * @package Drupal\official_facebook_pixel\integration
+ */
+
+class FacebookDrupalExample extends FacebookDrupalIntegrationBase {
+  const TRACKING_NAME = 'example';
+
+  public static function injectPixelCode() {
   }
 }
