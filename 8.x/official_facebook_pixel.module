@@ -17,40 +17,44 @@
  * Contains official_facebook_pixel.module.
  */
 
+use Drupal\official_facebook_pixel\OfficialFacebookPixelUtils;
 use Drupal\official_facebook_pixel\PixelScriptBuilder;
-require_once 'PixelScriptBuilder.php';
 
 /**
  * Implements hook_page_attachments().
  */
 function official_facebook_pixel_page_attachments(array &$page) {
-    // Return if user is admin
-    $roles = \Drupal::currentUser()->getRoles();
-    if (is_array($roles) && in_array("administrator", $roles)) {
-        return;
-    }
+  // Return if user is admin
+  $roles = \Drupal::currentUser()->getRoles();
+  if (is_array($roles) && in_array("administrator", $roles)) {
+    return;
+  }
 
-    $config = \Drupal::config('official_facebook_pixel.settings');
-    $pixel_id = $config->get('pixel_id');
+  $config = \Drupal::config('official_facebook_pixel.settings');
+  $pixel_id = $config->get('pixel_id');
+  // Return if pixel_id is not positive integer
+  if (!OfficialFacebookPixelUtils::isPositiveInteger($pixel_id)) {
+    return;
+  }
 
-    $pixel = new PixelScriptBuilder($pixel_id);
-    $pixel_script_code = $pixel->getPixelScriptCode();
-    $pixel_noscript_code = $pixel->getPixelNoscriptCode();
+  $pixel = new PixelScriptBuilder($pixel_id);
+  $pixel_script_code = $pixel->getPixelScriptCode();
+  $pixel_noscript_code = $pixel->getPixelNoscriptCode();
 
-    // Inject inline script code to head
-    $page['#attached']['html_head'][] = [
-        [
-            '#tag' => 'script',
-            '#value' => $pixel_script_code
-        ],
-        'facebook_pixel_script_code'
-    ];
+  // Inject inline script code to head
+  $page['#attached']['html_head'][] = [
+    [
+      '#tag' => 'script',
+      '#value' => $pixel_script_code
+    ],
+    'facebook_pixel_script_code'
+  ];
 
-    $page['#attached']['html_head'][] = [
-        [
-            '#tag' => 'noscript',
-            '#value' => $pixel_noscript_code
-        ],
-        'facebook_pixel_noscript_code'
-    ];
+  $page['#attached']['html_head'][] = [
+    [
+      '#tag' => 'noscript',
+      '#value' => $pixel_noscript_code
+    ],
+    'facebook_pixel_noscript_code'
+  ];
 }

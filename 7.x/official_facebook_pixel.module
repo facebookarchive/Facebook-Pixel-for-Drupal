@@ -17,8 +17,10 @@
  * Contains facebook_pixel.module.
  */
 
+use Drupal\official_facebook_pixel\OfficialFacebookPixelUtils;
 use Drupal\official_facebook_pixel\PixelScriptBuilder;
-require_once 'PixelScriptBuilder.php';
+require_once 'src/OfficialFacebookPixelUtils.php';
+require_once 'src/PixelScriptBuilder.php';
 
 /**
  * Implements hook_permission().
@@ -60,6 +62,10 @@ function official_facebook_pixel_page_build(&$page) {
   }
 
   $pixel_id = variable_get('pixel_id');
+  // Return if pixel_id is not positive integer
+  if (!OfficialFacebookPixelUtils::isPositiveInteger($pixel_id)) {
+    return;
+  }
 
   $pixel = new PixelScriptBuilder($pixel_id);
 

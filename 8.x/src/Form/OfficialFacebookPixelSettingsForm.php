@@ -31,57 +31,55 @@ use Drupal\Core\Form\FormStateInterface;
 class OfficialFacebookPixelSettingsForm extends ConfigFormBase {
 
   const CONFIG_NAME = 'official_facebook_pixel.settings';
+  const FORM_ID = 'official_facebook_pixel_settings';
+  const FORM_KEY = 'pixel_id';
+  const FORM_TITLE = 'Pixel ID';
+  const FORM_DESCRIPTION = 'Enter the Facebook Pixel ID';
 
-    /**
-     *
-     * {@inheritdoc}
-     */
-    public function getFormId() {
-        return 'official_facebook_pixel_settings';
-    }
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return self::FORM_ID;
+  }
 
-    /**
-     *
-     * {@inheritdoc}
-     */
-    protected function getEditableConfigNames() {
-        return [
-          self::CONFIG_NAME,
-        ];
-    }
+  /**
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return [
+      self::CONFIG_NAME,
+    ];
+  }
 
-    /**
-     *
-     * {@inheritdoc}
-     */
-    public function buildForm(array $form, FormStateInterface $form_state) {
-        $config = $this->config('official_facebook_pixel.settings');
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $config = $this->config(self::CONFIG_NAME);
 
-        $form['pixel_id'] = [
-            '#type' => 'textfield',
-            '#title' => $this->t('Pixel ID'),
-            '#description' => $this->t('Enter the Facebook Pixel ID'),
-            '#default_value' => $config->get('pixel_id'),
-            '#maxlength' => 64,
-            '#size' => 64
-        ];
+    $form[self::FORM_KEY] = [
+      '#type' => 'textfield',
+      '#title' => $this->t(self::FORM_TITLE),
+      '#description' => $this->t(self::FORM_DESCRIPTION),
+      '#default_value' => $config->get(self::FORM_KEY),
+      '#maxlength' => 64,
+      '#size' => 64
+    ];
 
-        return parent::buildForm($form, $form_state);
-    }
+    return parent::buildForm($form, $form_state);
+  }
 
-    /**
-     *
-     * {@inheritdoc}
-     */
-    public function submitForm(array &$form, FormStateInterface $form_state) {
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Retrieve the configuration
+    $this->config(self::CONFIG_NAME)
+      // Set the submitted pixel_id setting
+      ->set(self::FORM_KEY, $form_state->getValue(self::FORM_KEY))
+      ->save();
 
-        // Retrieve the configuration
-        $this->config('official_facebook_pixel.settings')
-            ->
-        // Set the submitted pixel_id setting
-        set('pixel_id', $form_state->getValue('pixel_id'))
-            ->save();
-
-        parent::submitForm($form, $form_state);
+    parent::submitForm($form, $form_state);
   }
 }
