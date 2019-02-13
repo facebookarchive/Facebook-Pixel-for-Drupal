@@ -37,6 +37,9 @@
         <copy todir="${buildsourcedir}">
             <fileset refid="sourcedir" />
         </copy>
+        <copy todir="${buildsourcesrcdir}" >
+          <fileset dir="${commondir}" />
+        </copy>
         <echo msg="Copy complete" />
         <echo msg="Build complete" />
     </target>
