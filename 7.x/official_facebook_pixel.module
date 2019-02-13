@@ -17,10 +17,9 @@
  * Contains facebook_pixel.module.
  */
 
+use Drupal\official_facebook_pixel\OfficialFacebookPixelOptions;
 use Drupal\official_facebook_pixel\OfficialFacebookPixelUtils;
 use Drupal\official_facebook_pixel\PixelScriptBuilder;
-require_once 'src/OfficialFacebookPixelUtils.php';
-require_once 'src/PixelScriptBuilder.php';
 
 /**
  * Implements hook_permission().
@@ -28,7 +27,7 @@ require_once 'src/PixelScriptBuilder.php';
 function official_facebook_pixel_permission() {
   return array(
     'admin' => array(
-      'title' => 'Official Facebook Pixel Plugin Admin',
+      'title' => t('Official Facebook Pixel Plugin Admin'),
       'description' => t('Official Facebook Pixel plugin admin.'),
     ),
   );
@@ -41,8 +40,8 @@ function official_facebook_pixel_menu() {
   $items = array();
 
   $items['admin/config/system/official_facebook_pixel'] = array(
-    'title' => 'Official Facebook Pixel Settings',
-    'description' => 'Configure Official Facebook Pixel.',
+    'title' => t('Official Facebook Pixel Settings'),
+    'description' => t('Configure Official Facebook Pixel.'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('official_facebook_pixel_settings_form'),
     'access arguments' => array('admin'),
@@ -61,23 +60,37 @@ function official_facebook_pixel_page_build(&$page) {
     return;
   }
 
-  $pixel_id = variable_get('pixel_id');
+  $options = OfficialFacebookPixelOptions::getInstance();
   // Return if pixel_id is not positive integer
-  if (!OfficialFacebookPixelUtils::isPositiveInteger($pixel_id)) {
+  if (!OfficialFacebookPixelUtils::isPositiveInteger($options->getPixelId())) {
     return;
   }
 
-  $pixel = new PixelScriptBuilder($pixel_id);
+  PixelScriptBuilder::initialize($options->getPixelId());
 
-  $pixel_code = $pixel->getPixelCode();
-
+  // Inject inline script code to head
+  $pixel_script_code = PixelScriptBuilder::getPixelBaseCode();
+  $pixel_script_code .= PixelScriptBuilder::getPixelInitCode(
+    $options->getAgentString(),
+    $options->getUserInfo());
+  $pixel_script_code .= PixelScriptBuilder::getPixelPageViewCode();
   drupal_add_html_head(
     [
       '#type' => 'markup',
-      '#markup' => $pixel_code,
+      '#markup' => $pixel_script_code,
       '#weight' => 1000,
     ],
-    'facebook_pixel_code');
+    'facebook_pixel_script_code');
+
+  // Inject inline noscript code to head
+  $pixel_noscript_code = PixelScriptBuilder::getPixelNoscriptCode();
+  drupal_add_html_head(
+    [
+      '#type' => 'markup',
+      '#markup' => $pixel_noscript_code,
+      '#weight' => 1000,
+    ],
+    'facebook_pixel_noscript_code');
 }
 
 /**

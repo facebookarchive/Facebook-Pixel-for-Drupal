@@ -35,5 +35,6 @@ class OfficialFacebookPixelConfig {
   const FORM_PIXEL_KEY = 'pixel_id';
   const FORM_PIXEL_TITLE = 'Pixel ID';
   const FORM_PIXEL_DESCRIPTION = 'Enter the Facebook Pixel ID';
-  const SOURCE = 'pldrupal-8';
+  const SOURCE_7 = 'pldrupal-7';
+  const SOURCE_8 = 'pldrupal-8';
 }
