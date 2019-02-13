@@ -17,6 +17,7 @@
  * Contains official_facebook_pixel.module.
  */
 
+use Drupal\official_facebook_pixel\OfficialFacebookPixelOptions;
 use Drupal\official_facebook_pixel\OfficialFacebookPixelUtils;
 use Drupal\official_facebook_pixel\PixelScriptBuilder;
 
@@ -30,18 +31,20 @@ function official_facebook_pixel_page_attachments(array &$page) {
     return;
   }
 
-  $config = \Drupal::config('official_facebook_pixel.settings');
-  $pixel_id = $config->get('pixel_id');
+  $options = OfficialFacebookPixelOptions::getInstance();
   // Return if pixel_id is not positive integer
-  if (!OfficialFacebookPixelUtils::isPositiveInteger($pixel_id)) {
+  if (!OfficialFacebookPixelUtils::isPositiveInteger($options->getPixelId())) {
     return;
   }
 
-  $pixel = new PixelScriptBuilder($pixel_id);
-  $pixel_script_code = $pixel->getPixelScriptCode();
-  $pixel_noscript_code = $pixel->getPixelNoscriptCode();
+  PixelScriptBuilder::initialize($options->getPixelId());
 
   // Inject inline script code to head
+  $pixel_script_code = PixelScriptBuilder::getPixelBaseCode();
+  $pixel_script_code .= PixelScriptBuilder::getPixelInitCode(
+    $options->getAgentString(),
+    $options->getUserInfo());
+  $pixel_script_code .= PixelScriptBuilder::getPixelPageViewCode();
   $page['#attached']['html_head'][] = [
     [
       '#tag' => 'script',
@@ -50,6 +53,8 @@ function official_facebook_pixel_page_attachments(array &$page) {
     'facebook_pixel_script_code'
   ];
 
+  // Inject inline noscript code to head
+  $pixel_noscript_code = PixelScriptBuilder::getPixelNoscriptCode();
   $page['#attached']['html_head'][] = [
     [
       '#tag' => 'noscript',

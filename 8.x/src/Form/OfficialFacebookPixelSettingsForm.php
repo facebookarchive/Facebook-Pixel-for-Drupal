@@ -23,24 +23,20 @@ namespace Drupal\official_facebook_pixel\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
+use Drupal\official_facebook_pixel\OfficialFacebookPixelConfig;
+use Drupal\official_facebook_pixel\OfficialFacebookPixelOptions;
+
 /**
  * Class OfficialFacebookPixelSettingsForm.
  *
  * @package Drupal\official_facebook_pixel\Form
  */
 class OfficialFacebookPixelSettingsForm extends ConfigFormBase {
-
-  const CONFIG_NAME = 'official_facebook_pixel.settings';
-  const FORM_ID = 'official_facebook_pixel_settings';
-  const FORM_KEY = 'pixel_id';
-  const FORM_TITLE = 'Pixel ID';
-  const FORM_DESCRIPTION = 'Enter the Facebook Pixel ID';
-
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return self::FORM_ID;
+    return OfficialFacebookPixelConfig::FORM_ID;
   }
 
   /**
@@ -48,7 +44,7 @@ class OfficialFacebookPixelSettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      self::CONFIG_NAME,
+      OfficialFacebookPixelConfig::CONFIG_NAME,
     ];
   }
 
@@ -56,15 +52,24 @@ class OfficialFacebookPixelSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config(self::CONFIG_NAME);
+    $options = OfficialFacebookPixelOptions::getInstance();
 
-    $form[self::FORM_KEY] = [
+    $form[OfficialFacebookPixelConfig::FORM_PIXEL_KEY] = [
       '#type' => 'textfield',
-      '#title' => $this->t(self::FORM_TITLE),
-      '#description' => $this->t(self::FORM_DESCRIPTION),
-      '#default_value' => $config->get(self::FORM_KEY),
+      '#title' => $this->t(OfficialFacebookPixelConfig::FORM_PIXEL_TITLE),
+      '#description' => $this->t(OfficialFacebookPixelConfig::FORM_PIXEL_DESCRIPTION),
+      '#default_value' => $options->getPixelId(),
       '#maxlength' => 64,
       '#size' => 64
+    ];
+
+    $form[OfficialFacebookPixelConfig::FORM_PII_KEY] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t(OfficialFacebookPixelConfig::FORM_PII_TITLE),
+      '#description' => $this->t(sprintf(
+        OfficialFacebookPixelConfig::FORM_PII_DESCRIPTION,
+        OfficialFacebookPixelConfig::FORM_PII_DESCRIPTION_LINK)),
+      '#default_value' => $options->getUsePii(),
     ];
 
     return parent::buildForm($form, $form_state);
@@ -75,9 +80,10 @@ class OfficialFacebookPixelSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Retrieve the configuration
-    $this->config(self::CONFIG_NAME)
+    $this->config(OfficialFacebookPixelConfig::CONFIG_NAME)
       // Set the submitted pixel_id setting
-      ->set(self::FORM_KEY, $form_state->getValue(self::FORM_KEY))
+      ->set(OfficialFacebookPixelConfig::FORM_PIXEL_KEY, $form_state->getValue(OfficialFacebookPixelConfig::FORM_PIXEL_KEY))
+      ->set(OfficialFacebookPixelConfig::FORM_PII_KEY, $form_state->getValue(OfficialFacebookPixelConfig::FORM_PII_KEY))
       ->save();
 
     parent::submitForm($form, $form_state);
