@@ -97,7 +97,7 @@ class OfficialFacebookPixelOptions {
 
   public function setVersionInfo() {
     $this->versionInfo = array(
-      'source' => OfficialFacebookPixelConfig::SOURCE,
+      'source' => OfficialFacebookPixelConfig::SOURCE_8,
       'version' => \Drupal::VERSION,
     );
   }
